@@ -1,0 +1,1190 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Checklist Vivo — Pró-Saber SP</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --green: #1D9E75;
+    --green-light: #E1F5EE;
+    --green-mid: #9FE1CB;
+    --green-dark: #0F6E56;
+    --green-xdark: #085041;
+    --amber: #BA7517;
+    --amber-light: #FAEEDA;
+    --blue: #185FA5;
+    --blue-light: #E6F1FB;
+    --purple: #534AB7;
+    --purple-light: #EEEDFE;
+    --bg: #F8F9F7;
+    --surface: #FFFFFF;
+    --border: rgba(0,0,0,0.08);
+    --border-strong: rgba(0,0,0,0.14);
+    --text: #1a1a18;
+    --text-muted: #6b7066;
+    --text-hint: #9ea899;
+    --radius: 10px;
+    --radius-sm: 6px;
+    --shadow: 0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04);
+    --shadow-md: 0 4px 12px rgba(0,0,0,0.08), 0 2px 4px rgba(0,0,0,0.04);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+  }
+
+  /* TOP BAR */
+  .topbar {
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    padding: 0 24px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 60px;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+  .topbar-left { display: flex; align-items: center; gap: 12px; min-width: 0; }
+  .logo {
+    width: 32px; height: 32px;
+    background: var(--green);
+    border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+  }
+  .logo svg { width: 18px; height: 18px; fill: white; }
+  .topbar-title { font-size: 15px; font-weight: 600; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .topbar-sub { font-size: 12px; color: var(--text-muted); margin-top: 1px; display: flex; align-items: center; gap: 6px; }
+  .topbar-right { display: flex; align-items: center; gap: 6px; flex-shrink: 0; }
+
+  .save-dot {
+    display: inline-block; width: 6px; height: 6px;
+    border-radius: 50%; background: var(--green);
+    transition: all 0.3s;
+  }
+  .save-dot.saving { background: var(--amber); animation: pulse 1s infinite; }
+  @keyframes pulse { 0%,100%{opacity:1;} 50%{opacity:0.4;} }
+
+  .btn {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 7px 12px; border-radius: var(--radius-sm);
+    font-family: 'DM Sans', sans-serif; font-size: 13px; font-weight: 500;
+    cursor: pointer; transition: all 0.15s; border: 1px solid transparent;
+    text-decoration: none; white-space: nowrap;
+  }
+  .btn-ghost { background: transparent; border-color: var(--border-strong); color: var(--text-muted); }
+  .btn-ghost:hover { background: var(--bg); color: var(--text); }
+  .btn-green { background: var(--green); color: white; border-color: var(--green); }
+  .btn-green:hover { background: var(--green-dark); border-color: var(--green-dark); }
+  .btn-share { background: var(--green-light); color: var(--green-dark); border-color: var(--green-mid); }
+  .btn-share:hover { background: var(--green-mid); }
+  .btn-danger { background: transparent; border-color: #F0958580; color: #A32D2D; }
+  .btn-danger:hover { background: #FCEBEB; }
+
+  .menu-wrap { position: relative; }
+  .menu-btn {
+    background: transparent; border: 1px solid var(--border-strong);
+    color: var(--text-muted); width: 32px; height: 32px;
+    border-radius: var(--radius-sm); cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .menu-btn:hover { background: var(--bg); color: var(--text); }
+  .menu-dropdown {
+    position: absolute; top: 38px; right: 0;
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: var(--radius); box-shadow: var(--shadow-md);
+    min-width: 220px; padding: 6px; display: none;
+    z-index: 110;
+  }
+  .menu-dropdown.open { display: block; }
+  .menu-item {
+    display: flex; align-items: center; gap: 10px;
+    padding: 9px 12px; font-size: 13px; color: var(--text);
+    border-radius: var(--radius-sm); cursor: pointer;
+    background: transparent; border: none; width: 100%; text-align: left;
+    font-family: inherit;
+  }
+  .menu-item:hover { background: var(--bg); }
+  .menu-item.danger { color: #A32D2D; }
+  .menu-item.danger:hover { background: #FCEBEB; }
+  .menu-divider { height: 1px; background: var(--border); margin: 4px 6px; }
+
+  /* TOAST */
+  .toast {
+    position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(80px);
+    background: var(--text); color: white;
+    padding: 10px 20px; border-radius: 30px;
+    font-size: 13px; font-weight: 500;
+    transition: transform 0.3s cubic-bezier(0.34,1.56,0.64,1);
+    z-index: 999; white-space: nowrap;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.2);
+  }
+  .toast.show { transform: translateX(-50%) translateY(0); }
+
+  /* MAIN */
+  .main { max-width: 880px; margin: 0 auto; padding: 24px 24px 80px; }
+
+  /* PROGRESS */
+  .progress-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 20px 24px;
+    margin-bottom: 16px;
+    box-shadow: var(--shadow);
+  }
+  .progress-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
+  .progress-label { font-size: 13px; color: var(--text-muted); }
+  .progress-pct { font-size: 22px; font-weight: 600; color: var(--green); font-family: 'DM Mono', monospace; }
+  .progress-bar {
+    height: 6px; background: var(--green-light); border-radius: 3px; overflow: hidden;
+  }
+  .progress-fill {
+    height: 100%; background: linear-gradient(90deg, var(--green) 0%, var(--green-dark) 100%);
+    border-radius: 3px; transition: width 0.4s cubic-bezier(0.4,0,0.2,1);
+  }
+  .stats-row { display: flex; gap: 12px; margin-top: 16px; }
+  .stat-chip {
+    flex: 1; background: var(--bg); border-radius: var(--radius-sm);
+    padding: 10px 14px; text-align: center;
+    border: 1px solid var(--border);
+  }
+  .stat-chip .n { font-size: 18px; font-weight: 600; font-family: 'DM Mono', monospace; color: var(--text); }
+  .stat-chip .l { font-size: 11px; color: var(--text-muted); margin-top: 2px; font-weight: 400; }
+  .stat-chip.green .n { color: var(--green); }
+  .stat-chip.amber .n { color: var(--amber); }
+
+  .save-status {
+    display: flex; align-items: center; justify-content: space-between;
+    margin-top: 14px; padding-top: 14px; border-top: 1px dashed var(--border);
+    font-size: 12px; color: var(--text-muted);
+  }
+  .save-status-left { display: flex; align-items: center; gap: 8px; }
+  .save-status .author { color: var(--text); font-weight: 500; }
+
+  /* AUTHOR INPUT */
+  .author-bar {
+    display: flex; align-items: center; gap: 10px;
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: var(--radius); padding: 10px 14px;
+    margin-bottom: 16px; box-shadow: var(--shadow);
+  }
+  .author-bar svg { color: var(--text-muted); flex-shrink: 0; }
+  .author-bar label { font-size: 12px; color: var(--text-muted); flex-shrink: 0; }
+  .author-input {
+    flex: 1; border: none; outline: none; background: transparent;
+    font-family: inherit; font-size: 13px; color: var(--text);
+    padding: 4px 0;
+  }
+  .author-input::placeholder { color: var(--text-hint); }
+
+  /* FILTERS */
+  .filter-row {
+    display: flex; gap: 6px; margin-bottom: 16px; flex-wrap: wrap;
+    align-items: center;
+  }
+  .filter-label { font-size: 12px; color: var(--text-hint); margin-right: 4px; font-weight: 500; }
+  .ftag {
+    padding: 5px 13px; border-radius: 20px; font-size: 12px; font-weight: 500;
+    cursor: pointer; border: 1px solid var(--border-strong);
+    background: transparent; color: var(--text-muted);
+    font-family: 'DM Sans', sans-serif; transition: all 0.12s;
+  }
+  .ftag:hover { border-color: var(--green-mid); color: var(--green-dark); }
+  .ftag.active { background: var(--green); color: white; border-color: var(--green); }
+  .ftag.active.amber-tag { background: var(--amber); border-color: var(--amber); }
+  .ftag.active.blue-tag { background: var(--blue); border-color: var(--blue); }
+  .ftag.active.purple-tag { background: var(--purple); border-color: var(--purple); }
+  .ftag.active.gray-tag { background: #5F5E5A; border-color: #5F5E5A; }
+
+  /* SECTIONS */
+  .section { margin-bottom: 12px; }
+  .sec-header {
+    display: flex; align-items: center; gap: 10px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 13px 16px;
+    cursor: pointer;
+    user-select: none;
+    transition: border-color 0.15s;
+    box-shadow: var(--shadow);
+  }
+  .sec-header:hover { border-color: var(--border-strong); }
+  .sec-header.open { border-bottom-left-radius: 0; border-bottom-right-radius: 0; border-bottom-color: transparent; }
+  .device-badge {
+    font-size: 11px; font-weight: 600; padding: 3px 10px;
+    border-radius: 20px; letter-spacing: 0.02em; white-space: nowrap;
+  }
+  .badge-desktop { background: var(--blue-light); color: var(--blue); }
+  .badge-tablet  { background: var(--amber-light); color: var(--amber); }
+  .badge-mobile  { background: var(--purple-light); color: var(--purple); }
+  .sec-title { font-size: 14px; font-weight: 600; flex: 1; }
+  .sec-meta { font-size: 12px; color: var(--text-hint); font-family: 'DM Mono', monospace; white-space: nowrap; }
+  .sec-arrow { font-size: 10px; color: var(--text-hint); transition: transform 0.2s; }
+  .sec-header.open .sec-arrow { transform: rotate(90deg); }
+  .sec-mini-bar {
+    height: 3px; width: 48px; background: var(--border);
+    border-radius: 2px; overflow: hidden; flex-shrink: 0;
+  }
+  .sec-mini-fill { height: 100%; background: var(--green); border-radius: 2px; transition: width 0.3s; }
+
+  .sec-body {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-top: none;
+    border-radius: 0 0 var(--radius) var(--radius);
+    overflow: hidden;
+    box-shadow: var(--shadow);
+    display: none;
+  }
+  .sec-body.open { display: block; }
+
+  /* PAGE GROUP */
+  .page-group { border-bottom: 1px solid var(--border); }
+  .page-group:last-child { border-bottom: none; }
+  .page-heading {
+    font-size: 11px; font-weight: 600; color: var(--text-hint);
+    text-transform: uppercase; letter-spacing: 0.06em;
+    padding: 10px 16px 4px;
+    background: var(--bg);
+  }
+
+  /* ITEM */
+  .item {
+    display: flex; align-items: flex-start; gap: 12px;
+    padding: 10px 16px;
+    transition: background 0.1s; border-bottom: 1px solid var(--border);
+  }
+  .item:last-child { border-bottom: none; }
+  .item:hover { background: #F3F7F5; }
+  .item.done .item-text { text-decoration: line-through; opacity: 0.5; }
+  .item.done .item-sub { opacity: 0.5; }
+
+  .chkbox {
+    width: 18px; height: 18px; min-width: 18px;
+    border: 1.5px solid var(--border-strong);
+    border-radius: 5px; margin-top: 1px;
+    display: flex; align-items: center; justify-content: center;
+    transition: all 0.15s; flex-shrink: 0; cursor: pointer;
+  }
+  .chkbox:hover { border-color: var(--green); }
+  .chkbox.on { background: var(--green); border-color: var(--green); }
+  .chkbox.on::after {
+    content: '';
+    display: block; width: 9px; height: 6px;
+    border-left: 2px solid white; border-bottom: 2px solid white;
+    transform: rotate(-45deg) translate(1px,-1px);
+  }
+
+  .item-body { flex: 1; min-width: 0; }
+  .item-text { font-size: 13px; line-height: 1.55; color: var(--text); cursor: pointer; }
+  .item-sub {
+    display: inline-block; margin-top: 4px;
+    font-size: 11px; font-weight: 500; color: var(--green-dark);
+    background: var(--green-light); padding: 2px 8px;
+    border-radius: 20px;
+  }
+  .item-meta {
+    font-size: 11px; color: var(--text-hint); margin-top: 4px;
+    display: flex; align-items: center; gap: 6px; flex-wrap: wrap;
+  }
+  .item-meta .dot { width: 3px; height: 3px; background: var(--text-hint); border-radius: 50%; }
+  .item-meta .by { color: var(--green-dark); font-weight: 500; }
+
+  .item-actions {
+    display: flex; align-items: center; gap: 4px;
+    margin-left: auto; flex-shrink: 0;
+  }
+  .icon-btn {
+    background: transparent; border: 1px solid transparent;
+    width: 26px; height: 26px; border-radius: var(--radius-sm);
+    color: var(--text-hint); cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    transition: all 0.12s;
+  }
+  .icon-btn:hover { background: var(--bg); border-color: var(--border-strong); color: var(--text); }
+  .icon-btn.has-note { color: var(--amber); }
+  .icon-btn.has-note:hover { background: var(--amber-light); border-color: var(--amber); color: var(--amber); }
+
+  /* NOTE PANEL */
+  .note-panel {
+    margin-top: 8px; padding: 10px 12px;
+    background: #FFFAEF; border: 1px solid #F3D9A0;
+    border-radius: var(--radius-sm); display: none;
+  }
+  .note-panel.open { display: block; }
+  .note-textarea {
+    width: 100%; border: none; background: transparent;
+    font-family: inherit; font-size: 13px; color: var(--text);
+    resize: vertical; min-height: 50px; outline: none;
+    line-height: 1.5;
+  }
+  .note-textarea::placeholder { color: var(--text-hint); }
+  .note-actions {
+    display: flex; align-items: center; justify-content: space-between;
+    margin-top: 6px; padding-top: 6px; border-top: 1px dashed #E8C97F;
+  }
+  .note-hint { font-size: 11px; color: var(--amber); }
+
+  /* EMPTY */
+  .empty { text-align: center; padding: 40px 20px; color: var(--text-muted); font-size: 14px; }
+  .empty span { display: block; font-size: 32px; margin-bottom: 8px; opacity: 0.4; }
+
+  /* FOOTER */
+  .footer { text-align: center; padding: 32px 0 0; font-size: 12px; color: var(--text-hint); }
+  .footer a { color: var(--green-dark); text-decoration: none; }
+  .footer a:hover { text-decoration: underline; }
+
+  /* MODAL */
+  .modal-overlay {
+    display: none; position: fixed; inset: 0;
+    background: rgba(0,0,0,0.35); z-index: 200;
+    align-items: center; justify-content: center;
+    padding: 24px;
+  }
+  .modal-overlay.open { display: flex; }
+  .modal {
+    background: var(--surface); border-radius: 14px;
+    padding: 24px; max-width: 560px; width: 100%;
+    max-height: 85vh; overflow-y: auto;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+  }
+  .modal h3 { font-size: 16px; font-weight: 600; margin-bottom: 6px; }
+  .modal p { font-size: 13px; color: var(--text-muted); margin-bottom: 16px; line-height: 1.5; }
+  .url-box { display: flex; gap: 8px; align-items: stretch; }
+  .url-input {
+    flex: 1; font-family: 'DM Mono', monospace; font-size: 11px;
+    padding: 9px 12px; border: 1px solid var(--border-strong);
+    border-radius: var(--radius-sm); background: var(--bg);
+    color: var(--text-muted); overflow: hidden; text-overflow: ellipsis;
+    white-space: nowrap; outline: none;
+  }
+  .modal-close {
+    margin-top: 16px; width: 100%; padding: 9px;
+    border-radius: var(--radius-sm); border: 1px solid var(--border-strong);
+    background: transparent; font-family: 'DM Sans', sans-serif;
+    font-size: 13px; cursor: pointer; color: var(--text-muted);
+  }
+  .modal-close:hover { background: var(--bg); }
+
+  .size-warning {
+    font-size: 11px; color: var(--amber); margin-top: 8px;
+    display: none; align-items: center; gap: 4px;
+  }
+
+  .activity-list {
+    border: 1px solid var(--border); border-radius: var(--radius-sm);
+    max-height: 420px; overflow-y: auto;
+    background: var(--bg);
+  }
+  .activity-item {
+    padding: 10px 14px; border-bottom: 1px solid var(--border);
+    font-size: 13px; line-height: 1.5;
+  }
+  .activity-item:last-child { border-bottom: none; }
+  .activity-meta {
+    font-size: 11px; color: var(--text-hint);
+    display: flex; gap: 6px; align-items: center; margin-top: 2px;
+  }
+  .activity-action {
+    display: inline-block; font-size: 10px; font-weight: 600;
+    padding: 1px 6px; border-radius: 10px;
+    margin-right: 6px; text-transform: uppercase; letter-spacing: 0.04em;
+  }
+  .activity-action.done { background: var(--green-light); color: var(--green-dark); }
+  .activity-action.undo { background: #F0E1E1; color: #A32D2D; }
+  .activity-action.note { background: var(--amber-light); color: var(--amber); }
+
+  .activity-empty {
+    padding: 32px 20px; text-align: center;
+    color: var(--text-hint); font-size: 13px;
+  }
+
+  @media (max-width: 700px) {
+    .topbar { padding: 0 12px; height: 56px; }
+    .topbar-title { font-size: 13px; }
+    .topbar-sub { font-size: 11px; }
+    .main { padding: 16px 14px 60px; }
+    .stats-row { gap: 6px; flex-wrap: wrap; }
+    .stat-chip { padding: 8px 10px; min-width: 80px; }
+    .stat-chip .n { font-size: 16px; }
+    .topbar-right .btn span { display: none; }
+    .topbar-right .btn { padding: 7px; }
+    .save-status { flex-direction: column; align-items: flex-start; gap: 4px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="topbar-left">
+    <div class="logo">
+      <svg viewBox="0 0 24 24"><path d="M9 3H5a2 2 0 00-2 2v4m6-6h10a2 2 0 012 2v4M9 3v18m0 0h10a2 2 0 002-2V9M9 21H5a2 2 0 01-2-2V9m0 0h18"/></svg>
+    </div>
+    <div style="min-width:0;">
+      <div class="topbar-title">Pró-Saber SP — Checklist Vivo</div>
+      <div class="topbar-sub">
+        <span class="save-dot" id="save-dot"></span>
+        <span id="save-text">Salvo automaticamente</span>
+      </div>
+    </div>
+  </div>
+  <div class="topbar-right">
+    <a href="https://prosabersp.framer.website/" class="btn btn-ghost" target="_blank">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6M15 3h6v6M10 14L21 3"/></svg>
+      <span>Ver site</span>
+    </a>
+    <button class="btn btn-share" onclick="openShare()">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
+      <span>Compartilhar</span>
+    </button>
+    <div class="menu-wrap">
+      <button class="menu-btn" onclick="toggleMenu(event)" aria-label="Mais opções">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><circle cx="5" cy="12" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="19" cy="12" r="2"/></svg>
+      </button>
+      <div class="menu-dropdown" id="menu-dropdown">
+        <button class="menu-item" onclick="closeMenu(); openActivity()">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+          Histórico de alterações
+        </button>
+        <button class="menu-item" onclick="closeMenu(); exportJSON()">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
+          Exportar backup (.json)
+        </button>
+        <button class="menu-item" onclick="closeMenu(); document.getElementById('import-input').click()">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M17 8l-5-5-5 5M12 3v12"/></svg>
+          Importar backup (.json)
+        </button>
+        <button class="menu-item" onclick="closeMenu(); exportCSV()">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+          Exportar relatório (.csv)
+        </button>
+        <div class="menu-divider"></div>
+        <button class="menu-item danger" onclick="closeMenu(); resetAll()">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"/></svg>
+          Resetar tudo
+        </button>
+      </div>
+    </div>
+    <input type="file" id="import-input" accept=".json" style="display:none" onchange="importJSON(event)">
+  </div>
+</div>
+
+<div class="main">
+  <div class="author-bar">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+    <label for="author">Quem está revisando:</label>
+    <input type="text" id="author" class="author-input" placeholder="Seu nome (aparecerá nos itens marcados)" oninput="onAuthorChange()" onblur="onAuthorChange()">
+  </div>
+
+  <div class="progress-card">
+    <div class="progress-row">
+      <div>
+        <div style="font-size:13px;font-weight:600;color:var(--text);margin-bottom:2px;">Progresso geral</div>
+        <div class="progress-label">Itens concluídos de <strong id="total-count">87</strong> ajustes</div>
+      </div>
+      <div class="progress-pct" id="pct-label">0%</div>
+    </div>
+    <div class="progress-bar"><div class="progress-fill" id="main-bar" style="width:0%"></div></div>
+    <div class="stats-row">
+      <div class="stat-chip green"><div class="n" id="done-count">0</div><div class="l">concluídos</div></div>
+      <div class="stat-chip amber"><div class="n" id="todo-count">87</div><div class="l">pendentes</div></div>
+      <div class="stat-chip"><div class="n" id="desk-count">0/37</div><div class="l">desktop</div></div>
+      <div class="stat-chip"><div class="n" id="tab-count">0/28</div><div class="l">tablet</div></div>
+      <div class="stat-chip"><div class="n" id="mob-count">0/22</div><div class="l">mobile</div></div>
+    </div>
+    <div class="save-status">
+      <div class="save-status-left">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+        <span>Última gravação: <span class="author" id="last-saved">—</span></span>
+      </div>
+      <div id="device-info" style="font-size:11px; color:var(--text-hint);"></div>
+    </div>
+  </div>
+
+  <div class="filter-row">
+    <span class="filter-label">Filtrar:</span>
+    <button class="ftag active" data-filter="all" onclick="setFilter(this)">Todos</button>
+    <button class="ftag blue-tag" data-filter="desktop" onclick="setFilter(this)">Desktop</button>
+    <button class="ftag amber-tag" data-filter="tablet" onclick="setFilter(this)">Tablet</button>
+    <button class="ftag purple-tag" data-filter="mobile" onclick="setFilter(this)">Mobile</button>
+    <button class="ftag gray-tag" data-filter="todo" onclick="setFilter(this)">Pendentes</button>
+    <button class="ftag" data-filter="notes" onclick="setFilter(this)">Com notas</button>
+  </div>
+
+  <div id="list"></div>
+
+  <div class="footer">
+    Pró-Saber SP · <a href="https://prosabersp.framer.website/" target="_blank">prosabersp.framer.website</a>
+    · Estado gravado automaticamente neste navegador
+  </div>
+</div>
+
+<!-- SHARE MODAL -->
+<div class="modal-overlay" id="share-modal">
+  <div class="modal">
+    <h3>Compartilhar checklist</h3>
+    <p>Esta URL contém o estado atual do checklist (itens marcados + notas). Quem abrir o link verá o mesmo conteúdo no navegador dele.</p>
+    <div class="url-box">
+      <input class="url-input" id="share-url" readonly onclick="this.select()">
+      <button class="btn btn-green" id="copy-btn" onclick="copyUrl()">Copiar</button>
+    </div>
+    <div class="size-warning" id="size-warning">
+      ⚠ URL longa — pode não funcionar em alguns apps. Use "Exportar backup (.json)" para compartilhar como arquivo.
+    </div>
+    <button class="modal-close" onclick="closeShare()">Fechar</button>
+  </div>
+</div>
+
+<!-- ACTIVITY MODAL -->
+<div class="modal-overlay" id="activity-modal">
+  <div class="modal">
+    <h3>Histórico de alterações</h3>
+    <p>Últimas 100 ações realizadas neste navegador.</p>
+    <div class="activity-list" id="activity-list"></div>
+    <button class="modal-close" onclick="closeActivity()">Fechar</button>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const DATA = [
+  // DESKTOP
+  {id:"d1",device:"desktop",page:"Home",sub:"Menu",text:"Menu dropdown pode aparecer mais para baixo, como se saísse da barra branca"},
+  {id:"d2",device:"desktop",page:"Home",sub:"Menu",text:"Avaliar voltar para menu simples — versão dropdown pode ser problema no tablet/mobile"},
+  {id:"d3",device:"desktop",page:"Home",sub:"Banner / Hero",text:"Resolver quebra visual entre bloco de texto e bloco de imagem. Sugestão: barra inferior reforçando a mensagem (ref. Instituto Ayrton Senna)"},
+  {id:"d4",device:"desktop",page:"Home",sub:"Programas",text:"Remover efeito de animação dos cards de programa. Ordem: LB → Biblio → PJ → LBE → Estações"},
+  {id:"d5",device:"desktop",page:"Home",sub:"Blog",text:"Manter apenas os 2 últimos posts + botão para o blog no final"},
+  {id:"d6",device:"desktop",page:"Home",sub:"Rodapé",text:"Rodapé muito alto — reduzir altura consideravelmente"},
+  {id:"d7",device:"desktop",page:"Quem Somos",sub:"Imagens",text:"Imagens não ficaram boas — dar mais destaque ao texto e retirar as imagens"},
+  {id:"d8",device:"desktop",page:"Quem Somos",sub:"Imagens",text:"Imagens sobrepostas cobrindo o texto — corrigir sobreposição"},
+  {id:"d9",device:"desktop",page:"Quem Somos",sub:"Seções",text:"Remover bloco desnecessário identificado na revisão"},
+  {id:"d10",device:"desktop",page:"Quem Somos",sub:"Equipe / Histórias",text:"Falta a seção de histórias. Bloco deve ser menor e junto com equipe + matérias + histórias"},
+  {id:"d11",device:"desktop",page:"Quem Somos",sub:"Scroll",text:"Efeito de aparecer no scroll às vezes não funciona corretamente — corrigir"},
+  {id:"d12",device:"desktop",page:"Quem Somos",sub:"Foto",text:"Foto do arrastão está incorreta — substituir pela foto correta"},
+  {id:"d13",device:"desktop",page:"O que fazemos",sub:"Menu âncora",text:"Link 'Impacto' no menu não redireciona para a seção de impacto na página — corrigir"},
+  {id:"d14",device:"desktop",page:"O que fazemos",sub:"Ordem programas",text:"Corrigir ordem dos programas: LB → Biblio → PJ → LBE → Estações"},
+  {id:"d15",device:"desktop",page:"O que fazemos",sub:"Layout cards",text:"Buracos visuais quando texto é menor. Sugestão: retirar imagens laterais e usar carrossel de fotos entre blocos"},
+  {id:"d16",device:"desktop",page:"LB — Leitura e Brincadeira",sub:"Indicadores",text:"Bloco de indicadores sobe para depois da explicação do programa. Estudar 4º indicador"},
+  {id:"d17",device:"desktop",page:"Biblio",sub:"Consistência",text:"Replicar mesmas mudanças do LB. Bloco de indicadores também muda de lugar"},
+  {id:"d18",device:"desktop",page:"Biblio",sub:"Layout",text:"Manter só texto + carrossel de fotos (remover imagens avulsas)"},
+  {id:"d19",device:"desktop",page:"PJ — Pró-Jovens",sub:"Menu e estrutura",text:"Criar item de menu apontando para cá + carrossel de imagens. Dois blocos de impacto: um para LBE e um para PJ"},
+  {id:"d20",device:"desktop",page:"PJ — Pró-Jovens",sub:"Blocos de impacto",text:"Bloco PJ fica no topo e bloco LBE no local atual"},
+  {id:"d21",device:"desktop",page:"Estações",sub:"Layout",text:"Mesmo padrão das outras páginas: bloco de texto + carrossel de fotos"},
+  {id:"d22",device:"desktop",page:"Estações",sub:"Imagem",text:"Adicionar mais texto; revisar exibição da imagem no mobile futuramente"},
+  {id:"d23",device:"desktop",page:"Transparência",sub:"Cards/blocos",text:"Transformar um dos dois blocos no modelo de exemplo indicado no PDF"},
+  {id:"d24",device:"desktop",page:"Blog",sub:"Ordenação",text:"Posts exibidos sem efeito, do mais novo para o mais antigo"},
+  {id:"d25",device:"desktop",page:"Blog",sub:"Vídeos",text:"Seção de vídeos: ordenar do mais novo para o mais antigo"},
+  {id:"d26",device:"desktop",page:"Blog",sub:"Fotos",text:"Seção de fotos: ordenar do mais novo para o mais antigo"},
+  {id:"d27",device:"desktop",page:"Como Apoiar",sub:"Links",text:"Link 'Pessoa Física' e 'PJ' indo para 'Fale Conosco' — corrigir destinos"},
+  {id:"d28",device:"desktop",page:"Como Apoiar",sub:"Accordion",text:"Não está claro que clicar no nome expande o texto — melhorar indicação visual"},
+  {id:"d29",device:"desktop",page:"Como Apoiar — PF",sub:"Depósito",text:"Juntar bloco de depósito ao bloco superior. Renomear para 'Outras formas de doação'. Texto + botões WhatsApp e e-mail"},
+  {id:"d30",device:"desktop",page:"Como Apoiar — PF",sub:"Passo a passo",text:"Imposto de Renda e Nota Fiscal: criar carrossel com passo a passo (imagem ou texto)"},
+  {id:"d31",device:"desktop",page:"Como Apoiar — PF",sub:"Opções",text:"Adicionar 'Comemoração solidária' como opção no bloco inicial"},
+  {id:"d32",device:"desktop",page:"Como Apoiar — PJ",sub:"Opções iniciais",text:"Seção inicial com opções clicáveis: Doação Mensal / Doação Única / Depósito Bancário"},
+  {id:"d33",device:"desktop",page:"Como Apoiar — PJ",sub:"Leis de Incentivo",text:"Bloco clicável com opções (Incentivo à Cultura, FUMCAD SP, CONDECA SP) → ao clicar, passo a passo em carrossel"},
+  {id:"d34",device:"desktop",page:"Como Apoiar — PJ",sub:"Voluntariado",text:"Manter bloco de voluntariado com botão WhatsApp + botão de e-mail"},
+  {id:"d35",device:"desktop",page:"Como Apoiar — PJ",sub:"Outras formas",text:"Bloco clicável: MRC, Apoio Institucional, Bazar, Nota Fiscal, Plataformas Internacionais"},
+  {id:"d36",device:"desktop",page:"Parceiros",sub:"Exibição",text:"Bloco de parceiros deve aparecer após clique em 'Como Apoiar' (depois da imagem da mediadora com links PJ e PF)"},
+  {id:"d37",device:"desktop",page:"Blog / Acontece no Pró",sub:"Busca",text:"Bloco de pesquisa/busca deve aparecer antes do último post, no início da seção"},
+  // TABLET
+  {id:"t1",device:"tablet",page:"Home",sub:"Menu",text:"Texto não aparece no menu — imagens ficam sem contexto. Corrigir exibição de texto"},
+  {id:"t2",device:"tablet",page:"Home",sub:"Menu",text:"Menu não fecha após selecionar opção — usuário precisa clicar no X. Corrigir comportamento"},
+  {id:"t3",device:"tablet",page:"Home",sub:"Banner / Hero",text:"Imagem no hero não aparece inteira — revisar corte no tablet"},
+  {id:"t4",device:"tablet",page:"Home",sub:"Hero",text:"Desktop: mostrar foto do menino. Tablet: ocultar essa foto"},
+  {id:"t5",device:"tablet",page:"Home",sub:"Programas",text:"Remover efeito + corrigir ordem: LB → Biblio → PJ → LBE → Estações"},
+  {id:"t6",device:"tablet",page:"Home",sub:"Blog",text:"Bloco 'Blog do Pró' foi para o final — mover para antes dos posts. Manter apenas 2 postagens"},
+  {id:"t7",device:"tablet",page:"Home",sub:"Rodapé",text:"Revisar rodapé no tablet (muito alto)"},
+  {id:"t8",device:"tablet",page:"Quem Somos",sub:"Menu",text:"Menu não abre subdivisões no tablet — resolver exibição de Equipe, Matérias, Histórias"},
+  {id:"t9",device:"tablet",page:"Quem Somos",sub:"Layout",text:"Formulário menor, antes do telefone, junto com equipe + matérias + histórias"},
+  {id:"t10",device:"tablet",page:"Quem Somos",sub:"Seções",text:"Remover blocos desnecessários. Falta seção de histórias"},
+  {id:"t11",device:"tablet",page:"Quem Somos",sub:"Imagens",text:"Imagens com tamanhos diferentes ficam estranhas no tablet — padronizar ou remover"},
+  {id:"t12",device:"tablet",page:"O que fazemos",sub:"Impacto",text:"Link 'Impacto' no menu sem funcionamento clicável — corrigir"},
+  {id:"t13",device:"tablet",page:"O que fazemos",sub:"Programas",text:"Remover efeito + corrigir ordem: LB → Biblio → PJ → LBE → Estações"},
+  {id:"t14",device:"tablet",page:"O que fazemos",sub:"Cards",text:"Se possível, retirar imagem dos cards no tablet"},
+  {id:"t15",device:"tablet",page:"LB — Leitura e Brincadeira",sub:"Indicadores",text:"Indicadores sobem para depois da explicação. Tentar 4 indicadores ou 3 na horizontal"},
+  {id:"t16",device:"tablet",page:"Biblio",sub:"Consistência",text:"Mesma questão da página LB — indicadores + layout"},
+  {id:"t17",device:"tablet",page:"PJ — Pró-Jovens",sub:"Menu e impacto",text:"Criar item de menu + seção de impacto separada do PJ. Blocos distintos LBE e PJ"},
+  {id:"t18",device:"tablet",page:"PJ — Pró-Jovens",sub:"Blocos",text:"Bloco PJ no topo e bloco LBE onde já está"},
+  {id:"t19",device:"tablet",page:"Estações",sub:"Layout",text:"Mesma sugestão do desktop"},
+  {id:"t20",device:"tablet",page:"Transparência",sub:"Blocos",text:"Transformar um dos blocos no modelo sugerido"},
+  {id:"t21",device:"tablet",page:"Blog",sub:"Impacto e ordem",text:"Impacto vai para depois do bloco inicial. Ordenar: mais novo → mais antigo"},
+  {id:"t22",device:"tablet",page:"Blog",sub:"Vídeos e fotos",text:"Vídeos e fotos: ordenar do mais novo para o mais velho"},
+  {id:"t23",device:"tablet",page:"Como Apoiar",sub:"Links",text:"Links PF e PJ indo para Fale Conosco — corrigir destinos"},
+  {id:"t24",device:"tablet",page:"Como Apoiar",sub:"Accordion",text:"Não está claro que clicar no nome expande o texto — melhorar indicação visual"},
+  {id:"t25",device:"tablet",page:"Como Apoiar",sub:"Contraste",text:"Texto ficou branco em algum bloco — corrigir contraste"},
+  {id:"t26",device:"tablet",page:"Como Apoiar — PJ",sub:"Opções iniciais",text:"Opções clicáveis: Doação Mensal / Doação Única / Depósito Bancário"},
+  {id:"t27",device:"tablet",page:"Blog",sub:"Nomenclatura",text:"Seção aparece como 'Acontece no Pró' no tablet e 'Blog' no desktop — padronizar. 'Fale conosco' aparece no tablet mas não no desktop"},
+  {id:"t28",device:"tablet",page:"Blog",sub:"Busca",text:"Bloco de pesquisa antes do último post"},
+  // MOBILE
+  {id:"m1",device:"mobile",page:"Home",sub:"Menu",text:"Menu não fecha sozinho + não abre subdivisões — mesma questão do tablet"},
+  {id:"m2",device:"mobile",page:"Home",sub:"Hero",text:"Mesma questão do tablet (exibição de imagem vs. texto no hero)"},
+  {id:"m3",device:"mobile",page:"Home",sub:"Hero",text:"No mobile a imagem apareceu antes do texto — verificar ordem e consistência"},
+  {id:"m4",device:"mobile",page:"Home",sub:"Programas",text:"Remover efeito + ordem: LB → Biblio → PJ → LBE → Estações"},
+  {id:"m5",device:"mobile",page:"Home",sub:"Blog",text:"Exibir apenas 2 posts"},
+  {id:"m6",device:"mobile",page:"Home",sub:"Rodapé",text:"Revisar rodapé no mobile"},
+  {id:"m7",device:"mobile",page:"Quem Somos",sub:"Menu",text:"Menu não abre subdivisões — mesmo problema do tablet"},
+  {id:"m8",device:"mobile",page:"Quem Somos",sub:"Layout",text:"Formulário menor, antes do telefone, junto com equipe + matérias + histórias"},
+  {id:"m9",device:"mobile",page:"Quem Somos",sub:"Seções",text:"Remover seções desnecessárias. Falta histórias"},
+  {id:"m10",device:"mobile",page:"Quem Somos",sub:"Imagens",text:"Sequência de imagens consecutivas ficou estranha — revisar"},
+  {id:"m11",device:"mobile",page:"O que fazemos",sub:"Impacto",text:"Link 'Impacto' sem clicável — corrigir"},
+  {id:"m12",device:"mobile",page:"O que fazemos",sub:"Programas",text:"Mesma coisa do desktop — remover efeito + corrigir ordem"},
+  {id:"m13",device:"mobile",page:"LB — Leitura e Brincadeira",sub:"Indicadores",text:"Bloco de indicadores sobe para depois da explicação do programa"},
+  {id:"m14",device:"mobile",page:"Biblio",sub:"Consistência",text:"Mesma coisa do desktop"},
+  {id:"m15",device:"mobile",page:"PJ — Pró-Jovens",sub:"Menu e impacto",text:"Criar item de menu + impacto separado do PJ"},
+  {id:"m16",device:"mobile",page:"PJ — Pró-Jovens / LBE",sub:"Blocos de impacto",text:"Bloco PJ acima e bloco LBE abaixo"},
+  {id:"m17",device:"mobile",page:"PJ / Estações",sub:"Efeito",text:"Efeito não está funcionando corretamente no mobile — corrigir ou remover"},
+  {id:"m18",device:"mobile",page:"Estações",sub:"Layout",text:"Mesma coisa do desktop"},
+  {id:"m19",device:"mobile",page:"Transparência",sub:"Blocos",text:"Criar item de menu apontando para cá + impacto separado do PJ"},
+  {id:"m20",device:"mobile",page:"Blog",sub:"Ordenação",text:"Sem efeito, do mais novo para o mais velho"},
+  {id:"m21",device:"mobile",page:"Blog — Fotos / Vídeos",sub:"Ordenação",text:"Mais novo para mais velho"},
+  {id:"m22",device:"mobile",page:"Como Apoiar",sub:"Links",text:"Links PF e PJ indo para Fale Conosco — corrigir destinos"},
+  {id:"m23",device:"mobile",page:"Como Apoiar",sub:"Accordion",text:"Não fica claro que clicar no nome expande o texto — melhorar indicação visual"},
+  {id:"m24",device:"mobile",page:"Como Apoiar — PF",sub:"Opções",text:"Mesma estrutura do desktop: Doação Mensal / Única / Depósito como opções clicáveis"},
+  {id:"m25",device:"mobile",page:"Como Apoiar — PJ",sub:"Estrutura",text:"Mesma estrutura do desktop para todas as opções"},
+  {id:"m26",device:"mobile",page:"Parceiros",sub:"Exibição",text:"Bloco de parceiros também entra após clique em 'Como Apoiar' — igual desktop"},
+  {id:"m27",device:"mobile",page:"Blog",sub:"Busca",text:"Bloco de pesquisa antes do último post"},
+];
+
+const TOTAL = DATA.length;
+const STORAGE_KEY = 'prosaber-checklist-v1';
+const ITEM_INDEX = {}; DATA.forEach(d => ITEM_INDEX[d.id] = d);
+
+// State shape:
+// { items: { id: { done, doneAt, doneBy, note, noteAt } }, author, activity: [...] }
+let state = { items: {}, author: '', activity: [] };
+let currentFilter = "all";
+const openedSecs_state = { desktop: true, tablet: true, mobile: true };
+const openedNotes = {};
+
+// ── PERSISTENCE ───────────────────────────────────────────────────────
+function persist() {
+  showSaving();
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+    updateLastSaved();
+    setTimeout(showSaved, 250);
+  } catch(e) {
+    setSaveStatus('error', 'Erro ao salvar');
+    console.error(e);
+  }
+}
+
+function loadFromStorage() {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (raw) {
+      const parsed = JSON.parse(raw);
+      state = Object.assign({ items: {}, author: '', activity: [] }, parsed);
+      return true;
+    }
+  } catch(e) { console.error('load error', e); }
+  return false;
+}
+
+function showSaving() {
+  document.getElementById('save-dot').classList.add('saving');
+  document.getElementById('save-text').textContent = 'Gravando…';
+}
+function showSaved() {
+  document.getElementById('save-dot').classList.remove('saving');
+  document.getElementById('save-text').textContent = 'Gravado neste navegador';
+}
+function setSaveStatus(_, msg) {
+  document.getElementById('save-text').textContent = msg;
+}
+
+function updateLastSaved() {
+  const recent = state.activity[0];
+  const el = document.getElementById('last-saved');
+  if (!recent) { el.textContent = '—'; return; }
+  el.innerHTML = `${formatRelative(recent.at)}${recent.by ? ' · por <span class="by">' + escapeHTML(recent.by) + '</span>' : ''}`;
+}
+
+// ── ACTIVITY LOG ──────────────────────────────────────────────────────
+function logActivity(action, itemId, extra) {
+  state.activity.unshift({
+    at: Date.now(),
+    by: state.author || '',
+    action, itemId,
+    ...(extra || {})
+  });
+  if (state.activity.length > 100) state.activity.length = 100;
+}
+
+// ── URL HASH (share) ──────────────────────────────────────────────────
+function encodeStateForUrl() {
+  const out = { v: 1, i: {}, a: state.author || '' };
+  Object.keys(state.items).forEach(id => {
+    const it = state.items[id];
+    if (it.done || it.note) {
+      out.i[id] = {
+        d: it.done ? 1 : 0,
+        n: it.note || undefined,
+        b: it.doneBy || undefined,
+        t: it.doneAt || undefined,
+      };
+    }
+  });
+  const json = JSON.stringify(out);
+  return 's=' + encodeURIComponent(btoa(unescape(encodeURIComponent(json))));
+}
+function decodeStateFromUrl() {
+  const m = location.hash.match(/s=([^&]+)/);
+  if (!m) {
+    // legacy hex format support
+    const hex = location.hash.slice(1);
+    if (hex && /^[0-9a-f]+$/.test(hex)) {
+      let bits = '';
+      for (let c of hex) bits += parseInt(c, 16).toString(2).padStart(4,'0');
+      DATA.forEach((d, i) => {
+        if (bits[i] === '1') {
+          state.items[d.id] = { done: true, doneAt: Date.now() };
+        }
+      });
+      return true;
+    }
+    return false;
+  }
+  try {
+    const json = decodeURIComponent(escape(atob(decodeURIComponent(m[1]))));
+    const obj = JSON.parse(json);
+    if (obj.a && !state.author) state.author = obj.a;
+    Object.keys(obj.i || {}).forEach(id => {
+      const it = obj.i[id];
+      state.items[id] = state.items[id] || {};
+      if (it.d) {
+        state.items[id].done = true;
+        state.items[id].doneAt = it.t || Date.now();
+        state.items[id].doneBy = it.b || '';
+      }
+      if (it.n) {
+        state.items[id].note = it.n;
+        state.items[id].noteAt = Date.now();
+      }
+    });
+    return true;
+  } catch(e) { console.error('decode error', e); return false; }
+}
+function buildShareUrl() {
+  return location.href.split('#')[0] + '#' + encodeStateForUrl();
+}
+
+// ── ACTIONS ───────────────────────────────────────────────────────────
+function toggle(id) {
+  const it = state.items[id] = state.items[id] || {};
+  it.done = !it.done;
+  if (it.done) {
+    it.doneAt = Date.now();
+    it.doneBy = state.author || '';
+    logActivity('done', id);
+  } else {
+    delete it.doneAt;
+    delete it.doneBy;
+    logActivity('undo', id);
+  }
+  persist();
+  updateStats();
+  const itemEl = document.querySelector(`[data-item="${id}"]`);
+  if (itemEl) {
+    itemEl.classList.toggle('done', !!it.done);
+    itemEl.querySelector('.chkbox').classList.toggle('on', !!it.done);
+    const meta = itemEl.querySelector('.item-meta');
+    if (meta) meta.outerHTML = renderItemMeta(id);
+    if ((currentFilter === 'todo' && it.done) || (currentFilter === 'notes' && !it.note)) {
+      itemEl.style.transition = 'opacity 0.3s';
+      itemEl.style.opacity = '0';
+      setTimeout(() => render(), 300);
+    }
+  }
+  updateSecBars();
+}
+
+function toggleNote(id, ev) {
+  if (ev) ev.stopPropagation();
+  openedNotes[id] = !openedNotes[id];
+  const panel = document.getElementById('note-' + id);
+  if (panel) {
+    panel.classList.toggle('open', openedNotes[id]);
+    if (openedNotes[id]) {
+      const ta = panel.querySelector('textarea');
+      if (ta) ta.focus();
+    }
+  }
+}
+
+function saveNote(id, value) {
+  const it = state.items[id] = state.items[id] || {};
+  const trimmed = (value || '').trim();
+  const had = !!it.note;
+  if (trimmed) {
+    const isNew = !had || it.note !== trimmed;
+    it.note = trimmed;
+    it.noteAt = Date.now();
+    it.noteBy = state.author || '';
+    if (isNew) logActivity('note', id, { preview: trimmed.slice(0, 80) });
+  } else {
+    delete it.note; delete it.noteAt; delete it.noteBy;
+    if (had) logActivity('note-removed', id);
+  }
+  persist();
+  // update icon state
+  const iconBtn = document.querySelector(`[data-item="${id}"] .note-toggle`);
+  if (iconBtn) iconBtn.classList.toggle('has-note', !!it.note);
+  showToast(trimmed ? 'Nota gravada' : 'Nota removida');
+}
+
+function onAuthorChange() {
+  const v = document.getElementById('author').value.trim();
+  if (v !== state.author) {
+    state.author = v;
+    persist();
+  }
+}
+
+function setFilter(btn) {
+  currentFilter = btn.dataset.filter;
+  document.querySelectorAll('.ftag').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  render();
+}
+
+function resetAll() {
+  if (!confirm('Resetar todo o progresso e notas? Esta ação não pode ser desfeita.')) return;
+  state = { items: {}, author: state.author, activity: [] };
+  persist();
+  history.replaceState(null, '', location.pathname);
+  render();
+  showToast('Progresso resetado');
+}
+
+function toggleSec(dev) {
+  openedSecs_state[dev] = !openedSecs_state[dev];
+  const header = document.querySelector(`#sec-${dev} .sec-header`);
+  const body = document.getElementById(`secbody-${dev}`);
+  if (header) header.classList.toggle('open', openedSecs_state[dev]);
+  if (body) body.classList.toggle('open', openedSecs_state[dev]);
+}
+
+// ── EXPORT / IMPORT ───────────────────────────────────────────────────
+function exportJSON() {
+  const blob = new Blob([JSON.stringify(state, null, 2)], {type:'application/json'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `prosaber-checklist-${dateStamp()}.json`;
+  a.click();
+  setTimeout(() => URL.revokeObjectURL(url), 1000);
+  showToast('Backup exportado');
+}
+
+function importJSON(ev) {
+  const file = ev.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = e => {
+    try {
+      const obj = JSON.parse(e.target.result);
+      if (!obj.items) throw new Error('Formato inválido');
+      if (!confirm('Importar este backup? O estado atual será substituído.')) return;
+      state = Object.assign({ items: {}, author: '', activity: [] }, obj);
+      document.getElementById('author').value = state.author || '';
+      persist();
+      render();
+      showToast('Backup importado');
+    } catch(err) {
+      alert('Erro ao importar: ' + err.message);
+    }
+  };
+  reader.readAsText(file);
+  ev.target.value = '';
+}
+
+function exportCSV() {
+  const rows = [['Dispositivo','Página','Categoria','Item','Status','Concluído em','Concluído por','Nota']];
+  DATA.forEach(d => {
+    const it = state.items[d.id] || {};
+    rows.push([
+      d.device,
+      d.page,
+      d.sub,
+      d.text,
+      it.done ? 'Concluído' : 'Pendente',
+      it.doneAt ? new Date(it.doneAt).toLocaleString('pt-BR') : '',
+      it.doneBy || '',
+      it.note || ''
+    ]);
+  });
+  const csv = rows.map(r => r.map(c => `"${(c+'').replace(/"/g,'""')}"`).join(',')).join('\n');
+  const blob = new Blob(['﻿' + csv], {type:'text/csv;charset=utf-8'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `prosaber-checklist-${dateStamp()}.csv`;
+  a.click();
+  setTimeout(() => URL.revokeObjectURL(url), 1000);
+  showToast('Relatório CSV exportado');
+}
+
+// ── RENDER ────────────────────────────────────────────────────────────
+function updateStats() {
+  const items = state.items;
+  const done = DATA.filter(d => items[d.id] && items[d.id].done).length;
+  const pct = Math.round((done / TOTAL) * 100);
+  document.getElementById('done-count').textContent = done;
+  document.getElementById('todo-count').textContent = TOTAL - done;
+  document.getElementById('pct-label').textContent = pct + '%';
+  document.getElementById('main-bar').style.width = pct + '%';
+
+  const counts = {desktop:0, tablet:0, mobile:0};
+  const totals = {desktop:37, tablet:28, mobile:22};
+  DATA.forEach(d => { if (items[d.id] && items[d.id].done) counts[d.device]++; });
+  document.getElementById('desk-count').textContent = counts.desktop + '/' + totals.desktop;
+  document.getElementById('tab-count').textContent = counts.tablet + '/' + totals.tablet;
+  document.getElementById('mob-count').textContent = counts.mobile + '/' + totals.mobile;
+
+  updateLastSaved();
+}
+
+function updateSecBars() {
+  ['desktop','tablet','mobile'].forEach(dev => {
+    const devItems = DATA.filter(d => d.device === dev);
+    const done = devItems.filter(d => state.items[d.id] && state.items[d.id].done).length;
+    const pct = Math.round((done / devItems.length) * 100);
+    const fill = document.querySelector(`#sec-${dev} .sec-mini-fill`);
+    const meta = document.querySelector(`#sec-${dev} .sec-meta`);
+    if (fill) fill.style.width = pct + '%';
+    if (meta) meta.textContent = done + '/' + devItems.length;
+  });
+}
+
+function renderItemMeta(id) {
+  const it = state.items[id] || {};
+  if (!it.done && !it.note) return '<div class="item-meta"></div>';
+  let parts = [];
+  if (it.done) {
+    parts.push('<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>');
+    if (it.doneBy) parts.push('por <span class="by">' + escapeHTML(it.doneBy) + '</span>');
+    parts.push(formatRelative(it.doneAt));
+  }
+  return `<div class="item-meta">${parts.join(' <span class="dot"></span> ')}</div>`;
+}
+
+function render() {
+  const deviceOrder = ['desktop','tablet','mobile'];
+  const deviceLabel = {desktop:'Desktop',tablet:'Tablet',mobile:'Mobile'};
+  const badgeCls = {desktop:'badge-desktop',tablet:'badge-tablet',mobile:'badge-mobile'};
+
+  let filtered = DATA.filter(d => {
+    const it = state.items[d.id] || {};
+    if (currentFilter === 'all') return true;
+    if (currentFilter === 'todo') return !it.done;
+    if (currentFilter === 'notes') return !!it.note;
+    return d.device === currentFilter;
+  });
+
+  const list = document.getElementById('list');
+  if (filtered.length === 0) {
+    list.innerHTML = '<div class="empty"><span>✓</span>Nenhum item neste filtro.</div>';
+    updateStats(); updateSecBars(); return;
+  }
+
+  const byDevice = {};
+  filtered.forEach(item => {
+    if (!byDevice[item.device]) byDevice[item.device] = {};
+    if (!byDevice[item.device][item.page]) byDevice[item.device][item.page] = [];
+    byDevice[item.device][item.page].push(item);
+  });
+
+  let html = '';
+  deviceOrder.forEach(dev => {
+    if (!byDevice[dev]) return;
+    const devItems = DATA.filter(d => d.device === dev);
+    const done = devItems.filter(d => state.items[d.id] && state.items[d.id].done).length;
+    const pct = Math.round((done / devItems.length) * 100);
+    const isOpen = openedSecs_state[dev] !== false;
+
+    html += `<div class="section" id="sec-${dev}">`;
+    html += `<div class="sec-header ${isOpen ? 'open' : ''}" onclick="toggleSec('${dev}')">
+      <span class="device-badge ${badgeCls[dev]}">${deviceLabel[dev]}</span>
+      <span class="sec-title">${deviceLabel[dev]}</span>
+      <div class="sec-mini-bar"><div class="sec-mini-fill" style="width:${pct}%"></div></div>
+      <span class="sec-meta">${done}/${devItems.length}</span>
+      <span class="sec-arrow">▶</span>
+    </div>`;
+    html += `<div class="sec-body ${isOpen ? 'open' : ''}" id="secbody-${dev}">`;
+
+    Object.keys(byDevice[dev]).forEach(page => {
+      html += `<div class="page-group">`;
+      html += `<div class="page-heading">${escapeHTML(page)}</div>`;
+      byDevice[dev][page].forEach(item => {
+        const it = state.items[item.id] || {};
+        const isDone = !!it.done;
+        const hasNote = !!it.note;
+        const noteOpen = !!openedNotes[item.id];
+        html += `<div class="item ${isDone ? 'done' : ''}" data-item="${item.id}">
+          <div class="chkbox ${isDone ? 'on' : ''}" onclick="toggle('${item.id}')"></div>
+          <div class="item-body">
+            <div class="item-text" onclick="toggle('${item.id}')">${escapeHTML(item.text)}</div>
+            <span class="item-sub">${escapeHTML(item.sub)}</span>
+            ${renderItemMeta(item.id)}
+            <div class="note-panel ${noteOpen || hasNote ? '' : ''} ${noteOpen ? 'open' : ''}" id="note-${item.id}">
+              <textarea class="note-textarea" placeholder="Adicionar nota, observação ou link..."
+                oninput="this._dirty=true"
+                onblur="if(this._dirty){saveNote('${item.id}', this.value); this._dirty=false;}">${escapeHTML(it.note || '')}</textarea>
+              <div class="note-actions">
+                <span class="note-hint">${hasNote && it.noteAt ? 'Atualizada ' + formatRelative(it.noteAt) : 'Sai do campo para gravar'}</span>
+                <button class="btn btn-ghost" style="padding:4px 10px;font-size:11px;" onclick="document.querySelector('#note-${item.id} textarea').value=''; saveNote('${item.id}', '')">Limpar</button>
+              </div>
+            </div>
+          </div>
+          <div class="item-actions">
+            <button class="icon-btn note-toggle ${hasNote ? 'has-note' : ''}" title="Adicionar nota" onclick="toggleNote('${item.id}', event)">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="${hasNote ? 'currentColor' : 'none'}" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8" fill="none" stroke="currentColor"/></svg>
+            </button>
+          </div>
+        </div>`;
+      });
+      html += `</div>`;
+    });
+
+    html += `</div></div>`;
+  });
+
+  list.innerHTML = html;
+  // restore note panels that were open
+  Object.keys(openedNotes).forEach(id => {
+    if (openedNotes[id]) {
+      const p = document.getElementById('note-' + id);
+      if (p) p.classList.add('open');
+    }
+  });
+  updateStats();
+  updateSecBars();
+}
+
+// ── SHARE / MENU / ACTIVITY ───────────────────────────────────────────
+function openShare() {
+  const url = buildShareUrl();
+  document.getElementById('share-url').value = url;
+  document.getElementById('size-warning').style.display = url.length > 2000 ? 'flex' : 'none';
+  document.getElementById('share-modal').classList.add('open');
+}
+function closeShare() { document.getElementById('share-modal').classList.remove('open'); }
+
+function copyUrl() {
+  const input = document.getElementById('share-url');
+  input.select();
+  navigator.clipboard.writeText(input.value).then(() => {
+    const btn = document.getElementById('copy-btn');
+    btn.textContent = 'Copiado!';
+    setTimeout(() => btn.textContent = 'Copiar', 2000);
+    showToast('URL copiada');
+  }).catch(() => {
+    document.execCommand('copy');
+    showToast('URL copiada');
+  });
+}
+
+function toggleMenu(ev) {
+  ev.stopPropagation();
+  document.getElementById('menu-dropdown').classList.toggle('open');
+}
+function closeMenu() {
+  document.getElementById('menu-dropdown').classList.remove('open');
+}
+document.addEventListener('click', () => closeMenu());
+
+function openActivity() {
+  const list = document.getElementById('activity-list');
+  if (!state.activity.length) {
+    list.innerHTML = '<div class="activity-empty">Nenhuma alteração registrada ainda. Marque um item para começar.</div>';
+  } else {
+    list.innerHTML = state.activity.map(a => {
+      const it = ITEM_INDEX[a.itemId];
+      if (!it) return '';
+      const labels = { done: 'concluído', undo: 'desmarcado', note: 'nota', 'note-removed': 'nota removida' };
+      const cls = a.action === 'done' ? 'done' : (a.action === 'undo' ? 'undo' : 'note');
+      return `<div class="activity-item">
+        <span class="activity-action ${cls}">${labels[a.action] || a.action}</span>
+        <span>${escapeHTML(it.text.slice(0, 90))}${it.text.length > 90 ? '…' : ''}</span>
+        <div class="activity-meta">
+          ${a.by ? '<span class="by" style="color:var(--green-dark);font-weight:500;">' + escapeHTML(a.by) + '</span> · ' : ''}
+          ${formatRelative(a.at)} ·
+          <span style="opacity:0.7">${escapeHTML(it.page)} / ${it.device}</span>
+          ${a.preview ? '<br><span style="opacity:0.7;">"' + escapeHTML(a.preview) + '"</span>' : ''}
+        </div>
+      </div>`;
+    }).join('');
+  }
+  document.getElementById('activity-modal').classList.add('open');
+}
+function closeActivity() { document.getElementById('activity-modal').classList.remove('open'); }
+
+// modal close on backdrop
+['share-modal','activity-modal'].forEach(id => {
+  document.getElementById(id).addEventListener('click', function(e){
+    if (e.target === this) this.classList.remove('open');
+  });
+});
+
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2200);
+}
+
+// ── HELPERS ───────────────────────────────────────────────────────────
+function escapeHTML(s) {
+  return (s+'').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+function dateStamp() {
+  const d = new Date();
+  return d.toISOString().slice(0,16).replace(/[T:]/g,'-');
+}
+function formatRelative(ts) {
+  if (!ts) return '';
+  const diff = Date.now() - ts;
+  const s = Math.round(diff/1000);
+  if (s < 60) return 'agora';
+  const m = Math.round(s/60);
+  if (m < 60) return `há ${m} min`;
+  const h = Math.round(m/60);
+  if (h < 24) return `há ${h}h`;
+  const dd = Math.round(h/24);
+  if (dd < 7) return `há ${dd}d`;
+  return new Date(ts).toLocaleDateString('pt-BR');
+}
+
+// ── INIT ──────────────────────────────────────────────────────────────
+loadFromStorage();
+const fromUrl = decodeStateFromUrl();
+if (fromUrl) {
+  // url state takes precedence and is persisted
+  persist();
+  history.replaceState(null, '', location.pathname);
+}
+document.getElementById('author').value = state.author || '';
+render();
+showSaved();
+updateLastSaved();
+
+// Refresh relative timestamps every 30s
+setInterval(() => { updateLastSaved(); }, 30000);
+</script>
+</body>
+</html>
